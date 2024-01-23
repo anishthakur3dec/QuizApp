@@ -1,0 +1,73 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+
+
+
+  <h1 class="display-4 text-center my-5">Edit Profile</h1>
+
+
+  <div class="container">
+    <div class="row row-cols-sm-1 row-cols-lg-3 container">
+      <div class="col-12">
+      </div>
+      <div class="col-12">
+
+
+
+        <form>
+          <div class="mb-3 d-flex justify-content-center">
+            <img src="./user.png" alt="profile-pic" width="150" height="150" class="rounded-circle">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputImage" class="form-label visually-hidden">Email</label>
+            <input type="file" class="form-control" id="exampleInputImage">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputFirstName" class="form-label visually-hidden">First Name</label>
+            <input type="text" class="form-control" id="exampleInputFirstName" placeholder="First Name">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputLastName" class="form-label visually-hidden">First Name</label>
+            <input type="text" class="form-control" id="exampleInputLastName" placeholder="Last Name">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail2" class="form-label visually-hidden">Email</label>
+            <input type="email" class="form-control" id="exampleInputEmail2" aria-describedby="emailHelp"
+              placeholder="Email">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputUsername1" class="form-label visually-hidden">Username</label>
+            <input type="text" class="form-control" id="exampleInputUsername1" aria-describedby="emailHelp"
+              placeholder="Username">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputLocation" class="form-label visually-hidden">First Name</label>
+            <input type="text" class="form-control" id="exampleInputLocation" placeholder="Location">
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleInputGender" class="form-label visually-hidden">Gender</label>
+            <select class="form-select form-control" id="exampleInputGender" aria-label="Default select example">
+              <option selected>Choose Your Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label visually-hidden">Example textarea</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Your Bio"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-success">Save Profile</button>
+        </form>
+      </div>
+      <div class="col-12">
+      </div>
+    </div>
+  </div>
+
+
+{% endblock content%}
