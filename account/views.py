@@ -91,12 +91,14 @@ def editProfile(request):
             if request.POST.get('username')!=None:
                 u=User.objects.filter(username=request.POST.get('username')).first()
                 if u==None:
-                    user_object.email=request.POST.get('username')
+                    user_object.username=request.POST.get('username')
                     user_object.save()
                 else:
                     if u != user_object:
                         messages.info(request,"Username Already Regitered, Try different unique one")
                         return redirect('edit_profile')
+                    
+
         # location,bio,gender
         user_profile.location=request.POST.get('location')
         user_profile.gender=request.POST.get('gender')
@@ -107,7 +109,8 @@ def editProfile(request):
         user_object.first_name=request.POST.get('firstname')
         user_object.last_name=request.POST.get('lastname')
         user_object.save()
-        pass
+        
+        return redirect('profile',user_object.username)
 
 
     context={"user_profile":user_profile}
@@ -115,7 +118,16 @@ def editProfile(request):
 
 @login_required(login_url='login')
 def deleteProfile(request):
-    context={}
+
+    user_object=User.objects.get(username=request.user)
+    user_profile=Profile.objects.get(user=user_object)
+
+    if request.method=="POST":
+        user_profile.delete()
+        user_object.delete()
+        return redirect('logout')
+
+    context={"user_profile":user_profile}
     return render(request,'confirm.html',context)
 
 
