@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% load static %}
+{% block title %}Register - QuizApp{% endblock title %}
 {% block content %}
 
 
@@ -39,7 +40,7 @@
             <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
             <label class="form-check-label" for="exampleCheck1">Terms and Conditions</label>
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary">Register</button>
           <p class="my-4">Already a member? <b><a href="{% url 'login' %}">Login</a></b></p>
         </form>
       </div>

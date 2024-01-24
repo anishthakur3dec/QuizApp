@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% load static %}
+{% block title %}Login - QuizApp{% endblock title %}
 {% block content %}
 
 
@@ -29,7 +30,7 @@
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
                         <label class="form-check-label" for="exampleCheck1">Remember me</label>
                     </div>
-                    <button type="submit" class="btn btn-primary px-5">Submit</button>
+                    <button type="submit" class="btn btn-primary px-5">Login</button>
                 </form>
                 <p class="my-4">Not a member yet? <b><a href="{% url 'register' %}">Register</a></b></p>
             </div>

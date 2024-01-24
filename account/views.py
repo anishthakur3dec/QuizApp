@@ -5,6 +5,12 @@ from .models import Profile
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('profile',request.user.username)
+
+
+
+
     if request.method == "POST":
         print(request.POST)  # Add this line to print the POST data for debugging purposes
         email = request.POST.get('email', '')
@@ -35,7 +41,7 @@ def register(request):
                 # create profilefor new user
 
                 user_model=User.objects.get(username=username)
-                new_profile=Profile.objects.create(user=user_model,email_addresss=email)
+                new_profile=Profile.objects.create(user=user_model)
                 new_profile.save()
                 return redirect('profile',user_model.username) #todo
 
@@ -48,27 +54,90 @@ def register(request):
 
 @login_required(login_url='login')
 def profile(request,username):
-    user_object = User.objects.get(username=username)
+    # profile user
+    user_object2 = User.objects.get(username=username)
+    user_profile2=Profile.objects.get(user=user_object2)
+    # request user
+    user_object=User.objects.get(username=request.user)
     user_profile=Profile.objects.get(user=user_object)
-    context={"user_profile":user_profile}
+
+    context={"user_profile":user_profile,"user_profile2":user_profile2}
 
     return render(request,"profile.html",context)
 
-def login(request):
+@login_required(login_url='login')
+def editProfile(request):
+    user_object=User.objects.get(username=request.user)
+    user_profile=Profile.objects.get(user=user_object)
+
     if request.method=="POST":
-        username=request.POST['username']
-        password=request.POST['password']
+        # Image
+        if request.FILES.get('profile_img')!=None:
+            user_profile.profile_img=request.FILES.get('profile_img')
+            user_profile.save()
+        # Email
+        if request.POST.get('email')!=None:
+            u=User.objects.filter(email=request.POST.get('email')).first()
+            if u==None:
+                user_object.email=request.POST.get('email')
+                user_object.save()
+            else:
+                if u != user_object:
+                    messages.info(request,"Email Already Used, Try different one")
+                    return redirect('edit_profile')
+                
 
-        user=auth.authenticate(username=username,password=password)
-        if user is not None:
-            auth.login(request,user)
+        # Username
+            if request.POST.get('username')!=None:
+                u=User.objects.filter(username=request.POST.get('username')).first()
+                if u==None:
+                    user_object.email=request.POST.get('username')
+                    user_object.save()
+                else:
+                    if u != user_object:
+                        messages.info(request,"Username Already Regitered, Try different unique one")
+                        return redirect('edit_profile')
+        # location,bio,gender
+        user_profile.location=request.POST.get('location')
+        user_profile.gender=request.POST.get('gender')
+        user_profile.bio=request.POST.get('bio')
+        user_profile.save()
 
-            return redirect('profile',username)
-        else:
-            messages.info(request,"Credentials invalid!")
-            return redirect('login')
+        # firstname , lastname
+        user_object.first_name=request.POST.get('firstname')
+        user_object.last_name=request.POST.get('lastname')
+        user_object.save()
+        pass
+
+
+    context={"user_profile":user_profile}
+    return render(request,'profile-edit.html',context)
+
+@login_required(login_url='login')
+def deleteProfile(request):
+    context={}
+    return render(request,'confirm.html',context)
+
+
+def login_user(request):
+
+    if request.user.is_authenticated:
+        return redirect('profile',request.user.username)
     
-    return render(request,"login.html")
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('profile', username)
+        else:
+            messages.info(request, "Credentials invalid!")
+            return redirect('login')
+
+    return render(request, "login.html")
+
 
 @login_required(login_url='login')
 def logout(request):
