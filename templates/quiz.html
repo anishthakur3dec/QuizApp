@@ -1,18 +1,23 @@
-{% extends "index.html" %}
-{% load static %}
-{% block title %}{{quiz.title}} - QuizApp{% endblock title %}
+{% extends 'index.html' %}
+
+{% block title %}{{quiz.title}}-Quiz{% endblock title %}
+
 {% block content %}
 
-
-
-    <h1 class="display-4 text-center my-5">{{quiz.title}} - ({{quiz.question_set.all|length}}) </h1>
+    <h1 class="display-4 text-center my-5">{{quiz.title}} - ({{quiz.question_set.all|length}})</h1>
     <p class="fs-4 text-center container">{{quiz.description}}</p>
 
     <div class="container">
         <div class="d-flex justify-content-between">
             <span class="fs-5">{{quiz.created_at}}</span>
-            <span class="fs-5">10:00</span>
+            <span class="fs-5" id="timer">10:00</span>
         </div>
+
+        {% for message in messages %}
+        <div id="message-div">
+            <h4 class="text-center text-success">{{message}}</h4>
+        </div>
+        {% endfor %}
 
 
         <div class="questions my-4">
@@ -38,11 +43,101 @@
             </div>
             {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary">Submit the quiz</button>
+
+        <form action="" method="post" id="quiz-form">
+            {% csrf_token %}
+            <!-- hidden input field for score -->
+            <input type="hidden" name="score" value="0" id="user-score">
+
+            <!-- submit button -->
+            <button type="submit" class="btn btn-primary" id="submit-button">Submit the quiz</button>
+        </form>
 
     </div>
 
+<script>
+    // Elements
+    var submitButton = document.getElementById("submit-button");
+    var timerSpan = document.getElementById("timer");
+    var quizForm = document.getElementById("quiz-form");
+    var questions = document.querySelectorAll(".question");
+    var userScoreInput = document.getElementById("user-score");
+
+    quizDuration = (questions.length) * 60; // convert in seconds
+    
+    // Update Timer
+    function updateTimer() {
+        var minutes = Math.floor(quizDuration / 60);
+        var seconds = quizDuration % 60;
+
+        timerSpan.innerText = minutes + "m" + seconds + 's';
+
+        // Check if the time ended
+        if (quizDuration <= 0) {
+            // Automatically Submit the quiz
+            clearTimeout(quizTimerId);
+            submitQuiz();
+        } else if (document.getElementById("message-div")) {
+            clearTimeout(quizTimerId);
+            highlightCorrectAnswers();
+        } else {
+            // decrement the timer value by 1s
+            quizDuration--;
+        }
+    }
+
+    // Function to submit the quiz
+    function submitQuiz() {
+        // Calculate the score
+        calculateScore();
+
+        // Submit the quiz
+        quizForm.submit();
+    }
+
+    // Check right answer and then calculate the score
+    function calculateScore() {
+        var score = 0;
+
+        // Loop through each question
+        questions.forEach(question => {
+            var selectedInput = question.querySelector('input:checked');
+            var correctAnswer = question.querySelector(".correct-answer").innerText;
+
+            // Check if the answer is correct or not
+            if (selectedInput && selectedInput.value === correctAnswer) {
+                score += 1;
+            }
+        });
+
+        // Update the hidden input field with score in form
+        userScoreInput.value = score;
+    }
+
+    // highlight correct answer while showing result
+    function highlightCorrectAnswers() {
+        questions.forEach(question => {
+            var correctAnswer = question.querySelector(".correct-answer");
+            correctAnswer.previousElementSibling.querySelector("input").classList.add("bg-success");
+            correctAnswer.previousElementSibling.classList.add("fw-bold");
+        });
+
+        // disable submit button
+        submitButton.disabled = true;
+
+        // disabel all options
+        var options = document.querySelectorAll(".form-check-input");
+        options.forEach(option => {
+            option.disabled = true;
+        });
+    }
+
+    // Attach Event Listener to Submit button
+    submitButton.addEventListener("click", submitQuiz);
+
+    // Timer Interval
+    quizTimerId = setInterval(updateTimer, 1000);
+</script>
 
 
-
-{% endblock content%}
+{% endblock content %}

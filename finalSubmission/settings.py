@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'account',
     'base',
     'quiz',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
